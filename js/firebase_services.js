@@ -35,7 +35,7 @@
   }
 
   function setStatus(status) {
-    window.firebaseServicesStatus = {
+    const payload = {
       enabled: state.enabled,
       initialized: state.initialized,
       analytics: state.analytics,
@@ -43,6 +43,10 @@
       error: state.error,
       ...status,
     };
+    window.firebaseServicesStatus = payload;
+    document.dispatchEvent(new CustomEvent('app:firebase-services-status', {
+      detail: payload,
+    }));
   }
 
   async function initFirebaseServices() {

@@ -97,6 +97,35 @@ function setupCardKeyboardNavigation() {
   });
 }
 
+function setServiceStatusText(id, text, className) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.classList.remove('status-ok', 'status-warn', 'status-off');
+  el.classList.add(className);
+}
+
+function applyGoogleServicesStatus(status) {
+  if (!status) return;
+  setServiceStatusText('gsStorageApiStatus', status.storageApiOk ? 'Connected' : 'Unavailable', status.storageApiOk ? 'status-ok' : 'status-off');
+  setServiceStatusText('gsDiscoveryApiStatus', status.discoveryApiOk ? 'Connected' : 'Unavailable', status.discoveryApiOk ? 'status-ok' : 'status-off');
+  setServiceStatusText('gsCalendarStatus', status.calendarEnabled ? 'Enabled' : 'Disabled', status.calendarEnabled ? 'status-ok' : 'status-off');
+  setServiceStatusText('gsMapsStatus', status.mapsEnabled ? 'Enabled' : 'Disabled', status.mapsEnabled ? 'status-ok' : 'status-off');
+}
+
+function applyFirebaseStatus(status) {
+  if (!status) return;
+  if (status.initialized && status.analytics) {
+    setServiceStatusText('gsFirebaseStatus', 'Analytics Active', 'status-ok');
+    return;
+  }
+  if (status.enabled && status.initialized) {
+    setServiceStatusText('gsFirebaseStatus', 'Configured', 'status-warn');
+    return;
+  }
+  setServiceStatusText('gsFirebaseStatus', 'Optional Setup', 'status-warn');
+}
+
 /* ══════════════════════════════════════════════════════════
    DARK / LIGHT MODE TOGGLE
    ══════════════════════════════════════════════════════════ */
@@ -337,6 +366,19 @@ document.addEventListener('DOMContentLoaded', () => {
   if (typeof initFirebaseServices === 'function') {
     initFirebaseServices();
   }
+
+  document.addEventListener('app:google-services-status', (event) => {
+    applyGoogleServicesStatus(event.detail);
+  });
+
+  document.addEventListener('app:firebase-services-status', (event) => {
+    applyFirebaseStatus(event.detail);
+  });
+
+  setTimeout(() => {
+    applyGoogleServicesStatus(window.googleServicesStatus);
+    applyFirebaseStatus(window.firebaseServicesStatus);
+  }, 700);
 
   /* ── Hash routing ────────────────────────────────────── */
   handleHashRouting();

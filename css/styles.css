@@ -394,6 +394,61 @@ body {
   gap: 1.25rem;
   padding: 2rem 2.5rem 4rem;
 }
+
+.google-services-panel {
+  margin-top: 1.5rem;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+}
+
+.google-services-panel h3 {
+  font-family: 'Outfit', sans-serif;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.google-services-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.84rem;
+  margin-bottom: 0.6rem;
+}
+
+.google-services-list {
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.google-services-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  font-size: 0.86rem;
+}
+
+.google-services-list strong {
+  font-size: 0.78rem;
+  border-radius: 999px;
+  padding: 2px 8px;
+  border: 1px solid var(--border);
+}
+
+.status-ok {
+  color: #43E97B;
+  border-color: rgba(67, 233, 123, 0.35) !important;
+}
+
+.status-warn {
+  color: #F7C948;
+  border-color: rgba(247, 201, 72, 0.35) !important;
+}
+
+.status-off {
+  color: #FF8A8A;
+  border-color: rgba(255, 138, 138, 0.35) !important;
+}
 .feature-card {
   background: var(--glass);
   border: 1px solid var(--glass-border);

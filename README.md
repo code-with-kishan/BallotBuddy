@@ -31,6 +31,7 @@
 | 📆 **Google Calendar Integration** | One-click "Add Election Reminder" to Google Calendar |
 | ☁️ **Google Services Instrumentation** | Optional GA4 analytics + Google Cloud Storage environment detection via `google_services.js` |
 | 🔥 **Firebase Ready Integration** | Optional Firebase App + Analytics bootstrap via `firebase_services.js` (credential-driven, graceful fallback) |
+| ✅ **Live Google API Verification** | Home dashboard performs active checks against Google Cloud Storage JSON API and Google Discovery API |
 | 🎤 **Voice Input** | Web Speech API voice recognition for hands-free AI queries |
 | 🔊 **Text-to-Speech** | AI responses read aloud using Web Speech Synthesis API |
 | 🌙 **Dark/Light Mode** | Persistent theme toggle stored in localStorage |
@@ -128,6 +129,16 @@ npx serve .
 > ✅ **No build step, no npm install, no configuration required.**
 > The entire app runs as static files in any modern browser (Chrome, Firefox, Safari, Edge).
 
+### Automated Node Test Command
+
+Run static validation checks:
+
+```bash
+npm test
+```
+
+This verifies security metadata, Google service integration hooks, event wiring, and workflow-test coverage.
+
 ### Optional: Enable GA4 for Google Services scoring
 If your evaluator checks for production-grade Google integration, add your GA4 Measurement ID:
 
@@ -217,6 +228,7 @@ Current self-tests cover:
 - Chat sanitization workflow
 - Skip-link and keyboard-focus workflow checks
 - Security metadata (CSP presence) checks
+- Live Google services status wiring checks (UI + runtime state)
 
 ---
 

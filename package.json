@@ -1,0 +1,9 @@
+{
+  "name": "ballotbuddy",
+  "version": "1.0.0",
+  "private": true,
+  "description": "ElectionGuide AI static web app",
+  "scripts": {
+    "test": "node tests/run-tests.js"
+  }
+}

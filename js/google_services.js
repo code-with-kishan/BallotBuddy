@@ -8,6 +8,8 @@
     analyticsEnabled: false,
     measurementId: null,
     storageHost: null,
+    storageApiOk: false,
+    discoveryApiOk: false,
   };
 
   function isValidMeasurementId(value) {
@@ -75,9 +77,47 @@
     if (!root) return;
     root.setAttribute('data-google-storage-host', state.storageHost ? 'true' : 'false');
     root.setAttribute('data-google-analytics', state.analyticsEnabled ? 'true' : 'false');
+    root.setAttribute('data-google-storage-api', state.storageApiOk ? 'true' : 'false');
+    root.setAttribute('data-google-discovery-api', state.discoveryApiOk ? 'true' : 'false');
   }
 
-  function initGoogleServices() {
+  async function verifyStorageApi() {
+    try {
+      const bucket = 'ballotbuddy01-500387404664-site';
+      const endpoint = `https://storage.googleapis.com/storage/v1/b/${bucket}/o/index.html`;
+      const response = await fetch(endpoint, { method: 'GET' });
+      state.storageApiOk = response.ok;
+    } catch (_) {
+      state.storageApiOk = false;
+    }
+  }
+
+  async function verifyDiscoveryApi() {
+    try {
+      const response = await fetch('https://www.googleapis.com/discovery/v1/apis?preferred=true', { method: 'GET' });
+      state.discoveryApiOk = response.ok;
+    } catch (_) {
+      state.discoveryApiOk = false;
+    }
+  }
+
+  function emitStatus() {
+    const payload = {
+      storageHost: state.storageHost,
+      analyticsEnabled: state.analyticsEnabled,
+      measurementId: state.measurementId,
+      storageApiOk: state.storageApiOk,
+      discoveryApiOk: state.discoveryApiOk,
+      mapsEnabled: true,
+      calendarEnabled: true,
+    };
+    window.googleServicesStatus = payload;
+    document.dispatchEvent(new CustomEvent('app:google-services-status', {
+      detail: payload,
+    }));
+  }
+
+  async function initGoogleServices() {
     state.storageHost = detectStorageHost();
 
     const measurementId = getConfiguredMeasurementId();
@@ -90,13 +130,9 @@
     }
 
     bindAppEvents();
+    await Promise.all([verifyStorageApi(), verifyDiscoveryApi()]);
     addStatusBadge();
-
-    window.googleServicesStatus = {
-      storageHost: state.storageHost,
-      analyticsEnabled: state.analyticsEnabled,
-      measurementId: state.measurementId,
-    };
+    emitStatus();
   }
 
   window.initGoogleServices = initGoogleServices;
