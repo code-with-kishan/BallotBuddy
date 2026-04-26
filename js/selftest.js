@@ -117,6 +117,33 @@
       assert(cspText.includes('object-src'), 'CSP object-src policy missing');
     });
 
+    test('google books panel is present', () => {
+      const panel = document.getElementById('googleBooksPanel');
+      const status = document.getElementById('googleBooksStatus');
+      assert(!!panel, 'Google Books panel missing');
+      assert(!!status, 'Google Books status missing');
+    });
+
+    test('map workflow exposes search and geolocation entrypoints', () => {
+      assert(typeof initMap === 'function', 'initMap not found');
+      assert(typeof searchPollingStations === 'function', 'searchPollingStations not found');
+      assert(typeof useMyLocation === 'function', 'useMyLocation not found');
+    });
+
+    test('toast system is callable', () => {
+      assert(typeof showToast === 'function', 'showToast not found');
+      showToast('Self-test toast', 'info', 500);
+      const toast = document.querySelector('#toastContainer .toast');
+      assert(!!toast, 'Toast did not render');
+    });
+
+    test('google service status includes API signals', () => {
+      const status = window.googleServicesStatus || {};
+      assert('storageApiOk' in status, 'storageApiOk missing');
+      assert('discoveryApiOk' in status, 'discoveryApiOk missing');
+      assert('booksApiOk' in status, 'booksApiOk missing');
+    });
+
     return results;
   }
 

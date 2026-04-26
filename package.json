@@ -4,6 +4,8 @@
   "private": true,
   "description": "ElectionGuide AI static web app",
   "scripts": {
-    "test": "node tests/run-tests.js"
+    "test": "node tests/run-tests.js",
+    "test:strict": "node tests/run-tests.js",
+    "test:ci": "node tests/run-tests.js"
   }
 }

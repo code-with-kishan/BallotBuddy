@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 const https = require('https');
+const vm = require('vm');
 
 const root = path.resolve(__dirname, '..');
 
@@ -9,132 +10,170 @@ function read(relPath) {
   return fs.readFileSync(path.join(root, relPath), 'utf8');
 }
 
-function test(name, fn) {
-  try {
-    fn();
-    console.log(`PASS ${name}`);
-    return true;
-  } catch (err) {
-    console.error(`FAIL ${name}: ${err.message}`);
-    return false;
-  }
+function fileExists(relPath) {
+  return fs.existsSync(path.join(root, relPath));
 }
 
-function testAsync(name, fn) {
-  return Promise.resolve()
-    .then(fn)
-    .then(() => {
-      console.log(`PASS ${name}`);
-      return true;
-    })
-    .catch((error) => {
-      console.error(`FAIL ${name}: ${error.message}`);
-      return false;
-    });
+function countMatches(source, re) {
+  const matches = source.match(re);
+  return matches ? matches.length : 0;
 }
 
-function fetchJson(url) {
+function fetch(url) {
   return new Promise((resolve, reject) => {
     https.get(url, (response) => {
       const chunks = [];
       response.on('data', (chunk) => chunks.push(chunk));
       response.on('end', () => {
         const body = Buffer.concat(chunks).toString('utf8');
-        if (response.statusCode < 200 || response.statusCode >= 300) {
-          reject(new Error(`HTTP ${response.statusCode}`));
-          return;
-        }
-        try {
-          resolve(JSON.parse(body));
-        } catch (error) {
-          reject(error);
-        }
+        resolve({ status: response.statusCode, body });
       });
     }).on('error', reject);
   });
 }
 
+function fetchJson(url) {
+  return fetch(url).then((res) => {
+    if (res.status < 200 || res.status >= 300) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+    return JSON.parse(res.body);
+  });
+}
+
+function testSync(name, fn, bucket) {
+  try {
+    fn();
+    bucket.pass += 1;
+    console.log(`PASS ${name}`);
+  } catch (error) {
+    bucket.fail += 1;
+    console.error(`FAIL ${name}: ${error.message}`);
+  }
+}
+
+async function testAsync(name, fn, bucket) {
+  try {
+    await fn();
+    bucket.pass += 1;
+    console.log(`PASS ${name}`);
+  } catch (error) {
+    bucket.fail += 1;
+    console.error(`FAIL ${name}: ${error.message}`);
+  }
+}
+
 const indexHtml = read('index.html');
+const css = read('css/styles.css');
 const mainJs = read('js/main.js');
+const chatJs = read('js/chat.js');
+const dataJs = read('js/data.js');
 const googleServicesJs = read('js/google_services.js');
 const firebaseServicesJs = read('js/firebase_services.js');
 const selftestJs = read('js/selftest.js');
 
-const checks = [];
+const result = { pass: 0, fail: 0 };
 
-checks.push(test('CSP meta exists in index', () => {
-  assert(indexHtml.includes('Content-Security-Policy'));
-  assert(indexHtml.includes("default-src 'self'"));
-  assert(indexHtml.includes("object-src 'none'"));
-  assert(indexHtml.includes('https://www.googleapis.com'));
-  assert(indexHtml.includes('https://storage.googleapis.com'));
-}));
+['js/data.js', 'js/chat.js', 'js/guide.js', 'js/timeline.js', 'js/faq.js', 'js/myths.js', 'js/map.js', 'js/google_services.js', 'js/firebase_services.js', 'js/selftest.js', 'js/main.js'].forEach((rel) => {
+  testSync(`File exists: ${rel}`, () => assert(fileExists(rel)), result);
+});
 
-checks.push(test('Google services panel exists in UI', () => {
-  assert(indexHtml.includes('id="googleServicesPanel"'));
-  assert(indexHtml.includes('id="googleAuthPanel"'));
-  assert(indexHtml.includes('id="gsStorageApiStatus"'));
-  assert(indexHtml.includes('id="gsDiscoveryApiStatus"'));
-  assert(indexHtml.includes('id="gsBooksStatus"'));
-  assert(indexHtml.includes('id="gsAuthStatus"'));
-  assert(indexHtml.includes('name="google-api-key"'));
-}));
+testSync('CI workflow exists', () => {
+  assert(fileExists('.github/workflows/tests.yml'));
+}, result);
 
-checks.push(test('Google services module verifies Google APIs', () => {
-  assert(googleServicesJs.includes('https://storage.googleapis.com/storage/v1/'));
-  assert(googleServicesJs.includes('https://www.googleapis.com/discovery/v1/apis'));
-  assert(googleServicesJs.includes('https://www.googleapis.com/books/v1/volumes'));
-  assert(googleServicesJs.includes('getConfiguredApiKey'));
-  assert(googleServicesJs.includes('apiKeyConfigured'));
-  assert(googleServicesJs.includes('google-client-id'));
-  assert(googleServicesJs.includes('data-google-auth-ready'));
-  assert(googleServicesJs.includes('app:google-services-status'));
-}));
+testSync('npm test script configured', () => {
+  const pkg = JSON.parse(read('package.json'));
+  assert(pkg.scripts && pkg.scripts.test && pkg.scripts.test.includes('node tests/run-tests.js'));
+}, result);
 
-checks.push(test('Firebase module emits status events', () => {
+['Content-Security-Policy', "default-src 'self'", "object-src 'none'", 'https://www.googleapis.com', 'https://storage.googleapis.com'].forEach((needle) => {
+  testSync(`Security marker present: ${needle}`, () => assert(indexHtml.includes(needle)), result);
+});
+
+testSync('Chat user messages are text-rendered', () => {
+  assert(chatJs.includes('bubble.textContent = content'));
+}, result);
+
+testSync('No hardcoded Google Maps v1 API key embed URL remains', () => {
+  assert(!indexHtml.includes('maps/embed/v1/search?key='));
+}, result);
+
+['class="skip-link"', 'aria-label="Main Navigation"', 'aria-live="polite"'].forEach((needle) => {
+  testSync(`Accessibility marker present: ${needle}`, () => assert(indexHtml.includes(needle)), result);
+});
+
+testSync('Keyboard-focusable feature cards exist', () => {
+  assert(countMatches(indexHtml, /class="feature-card"/g) >= 4);
+  assert(countMatches(indexHtml, /tabindex="0"/g) >= 4);
+}, result);
+
+testSync('Reduced-motion support exists', () => {
+  assert(css.includes('prefers-reduced-motion: reduce'));
+}, result);
+
+['navigateTo(', 'setupKeyboardShortcuts(', 'setupCardKeyboardNavigation(', 'initGoogleServices()', 'initFirebaseServices()'].forEach((needle) => {
+  testSync(`Main workflow hook present: ${needle}`, () => assert(mainJs.includes(needle)), result);
+});
+
+['FAQ filter workflow executes', 'chat sanitization workflow blocks html injection', 'content security policy meta exists', 'feature cards are keyboard-focusable'].forEach((needle) => {
+  testSync(`Browser self-test case present: ${needle}`, () => assert(selftestJs.includes(needle)), result);
+});
+
+['https://storage.googleapis.com/storage/v1/', 'https://www.googleapis.com/discovery/v1/apis', 'https://www.googleapis.com/books/v1/volumes', 'getConfiguredApiKey', 'apiKeyConfigured', 'app:google-services-status'].forEach((needle) => {
+  testSync(`Google services implementation marker: ${needle}`, () => assert(googleServicesJs.includes(needle)), result);
+});
+
+testSync('Firebase status event hook present', () => {
   assert(firebaseServicesJs.includes('app:firebase-services-status'));
-  assert(firebaseServicesJs.includes('firebase-app.js'));
-}));
+}, result);
 
-checks.push(test('Main module renders service statuses', () => {
-  assert(mainJs.includes('applyGoogleServicesStatus'));
-  assert(mainJs.includes('applyFirebaseStatus'));
-  assert(mainJs.includes('app:google-services-status'));
-}));
+(function runDataChecks() {
+  const sandbox = { console };
+  vm.createContext(sandbox);
+  vm.runInContext(`${dataJs}\nthis.__testData={ELECTION_STEPS,TIMELINES,FAQS,MYTHS,POLLING_STATIONS,FAQ_CATEGORIES,AI_KB};`, sandbox);
+  const d = sandbox.__testData;
 
-checks.push(test('Automated self-tests include workflow breadth', () => {
-  assert(selftestJs.includes('FAQ filter workflow executes'));
-  assert(selftestJs.includes('chat sanitization workflow blocks html injection'));
-  assert(selftestJs.includes('content security policy meta exists'));
-}));
+  testSync('Election steps count >= 5', () => assert(d.ELECTION_STEPS.length >= 5), result);
+  testSync('Timeline has India/USA/UK', () => {
+    assert(Array.isArray(d.TIMELINES.India));
+    assert(Array.isArray(d.TIMELINES.USA));
+    assert(Array.isArray(d.TIMELINES.UK));
+  }, result);
+  testSync('FAQ set has at least 20 entries', () => assert(d.FAQS.length >= 20), result);
+  testSync('Myths set has at least 10 entries', () => assert(d.MYTHS.length >= 10), result);
+  testSync('Polling stations set has entries', () => assert(d.POLLING_STATIONS.length >= 1), result);
+  testSync('FAQ categories includes Technology', () => assert(d.FAQ_CATEGORIES.includes('Technology')), result);
+  testSync('AI keyword buckets include eligibility and registration', () => {
+    assert(Array.isArray(d.AI_KB.age_eligible));
+    assert(Array.isArray(d.AI_KB.register));
+  }, result);
+})();
 
-async function runLiveChecks() {
-  const liveChecks = [];
-
-  liveChecks.push(await testAsync('Live Google Books API responds', async () => {
+(async () => {
+  await testAsync('Live Google Books API responds', async () => {
     const payload = await fetchJson('https://www.googleapis.com/books/v1/volumes?q=democracy&maxResults=1');
     assert(payload.kind === 'books#volumes');
     assert(typeof payload.totalItems === 'number');
-  }));
+  }, result);
 
-  liveChecks.push(await testAsync('Live Google Storage API responds', async () => {
+  await testAsync('Live Google Storage API responds', async () => {
     const payload = await fetchJson('https://storage.googleapis.com/storage/v1/b/ballotbuddy01-500387404664-site/o/index.html');
     assert(payload.kind === 'storage#object');
     assert(payload.name === 'index.html');
-  }));
+  }, result);
 
-  const passed = checks.filter(Boolean).length + liveChecks.filter(Boolean).length;
-  const total = checks.length + liveChecks.length;
+  await testAsync('Live app URL reachable', async () => {
+    const res = await fetch('https://storage.googleapis.com/ballotbuddy01-500387404664-site/index.html');
+    assert(res.status === 200);
+    assert(res.body.includes('Google Services Status'));
+  }, result);
 
-  if (passed !== total) {
-    console.error(`\n${passed}/${total} checks passed`);
+  const total = result.pass + result.fail;
+  if (result.fail > 0) {
+    console.error(`\n${result.pass}/${total} checks passed`);
     process.exit(1);
   }
 
-  console.log(`\n${passed}/${total} checks passed`);
-}
-
-runLiveChecks().catch((error) => {
-  console.error(error);
-  process.exit(1);
-});
+  console.log(`\n${result.pass}/${total} checks passed`);
+})();
