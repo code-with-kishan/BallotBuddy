@@ -170,7 +170,11 @@ testSync('Firebase status event hook present', () => {
   }, result);
 
   await testAsync('Live Google Civic API responds', async () => {
-    const payload = await fetchJson('https://www.googleapis.com/civicinfo/v2/elections?key=REDACTED_GOOGLE_API_KEY');
+    const apiKey = process.env.GOOGLE_API_KEY;
+    if (!apiKey) {
+      return;
+    }
+    const payload = await fetchJson(`https://www.googleapis.com/civicinfo/v2/elections?key=${encodeURIComponent(apiKey)}`);
     assert(payload.kind === 'civicinfo#electionsQueryResponse');
     assert(Array.isArray(payload.elections));
   }, result);
