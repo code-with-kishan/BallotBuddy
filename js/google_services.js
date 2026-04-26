@@ -8,6 +8,7 @@
     analyticsEnabled: false,
     measurementId: null,
     clientId: null,
+    apiKey: null,
     storageHost: null,
     storageApiOk: false,
     discoveryApiOk: false,
@@ -31,6 +32,13 @@
     const meta = document.querySelector('meta[name="google-client-id"]')?.content?.trim();
     const local = localStorage.getItem('electionGuide_google_client_id')?.trim();
     const url = new URLSearchParams(window.location.search).get('clientId')?.trim();
+    return url || local || meta || '';
+  }
+
+  function getConfiguredApiKey() {
+    const meta = document.querySelector('meta[name="google-api-key"]')?.content?.trim();
+    const local = localStorage.getItem('electionGuide_google_api_key')?.trim();
+    const url = new URLSearchParams(window.location.search).get('apiKey')?.trim();
     return url || local || meta || '';
   }
 
@@ -92,6 +100,7 @@
     root.setAttribute('data-google-discovery-api', state.discoveryApiOk ? 'true' : 'false');
     root.setAttribute('data-google-books-api', state.booksApiOk ? 'true' : 'false');
     root.setAttribute('data-google-auth-ready', state.clientId ? 'true' : 'false');
+    root.setAttribute('data-google-api-key', state.apiKey ? 'true' : 'false');
   }
 
   async function verifyStorageApi() {
@@ -151,7 +160,8 @@
     if (status) status.textContent = `Searching Google Books for “${normalized}”…`;
 
     try {
-      const endpoint = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(normalized)}&maxResults=4&printType=books`;
+      const keyQuery = state.apiKey ? `&key=${encodeURIComponent(state.apiKey)}` : '';
+      const endpoint = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(normalized)}&maxResults=4&printType=books${keyQuery}`;
       const response = await fetch(endpoint, { method: 'GET' });
       state.booksApiOk = response.ok;
       const payload = await response.json();
@@ -175,6 +185,7 @@
       analyticsEnabled: state.analyticsEnabled,
       measurementId: state.measurementId,
       clientId: state.clientId,
+      apiKeyConfigured: Boolean(state.apiKey),
       storageApiOk: state.storageApiOk,
       discoveryApiOk: state.discoveryApiOk,
       booksApiOk: state.booksApiOk,
@@ -191,6 +202,7 @@
   async function initGoogleServices() {
     state.storageHost = detectStorageHost();
     state.clientId = getConfiguredClientId();
+    state.apiKey = getConfiguredApiKey();
 
     const measurementId = getConfiguredMeasurementId();
     if (isValidMeasurementId(measurementId)) {
@@ -221,7 +233,15 @@
     const authButton = document.getElementById('googleSignInBtn');
     const authBadge = document.getElementById('gsAuthStatus');
     if (authStatus && authButton) {
-      if (state.clientId) {
+      if (state.apiKey && state.booksApiOk) {
+        authStatus.textContent = 'Authenticated Google API key requests are active.';
+        authButton.textContent = 'Auth Active';
+        authButton.disabled = true;
+        if (authBadge) {
+          authBadge.textContent = 'Active';
+          authBadge.classList.add('status-ok');
+        }
+      } else if (state.clientId) {
         authStatus.textContent = 'Google Identity Services is configured and ready to activate.';
         authButton.textContent = 'Google Sign-In Ready';
         authButton.disabled = false;

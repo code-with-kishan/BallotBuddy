@@ -66,6 +66,8 @@ checks.push(test('CSP meta exists in index', () => {
   assert(indexHtml.includes('Content-Security-Policy'));
   assert(indexHtml.includes("default-src 'self'"));
   assert(indexHtml.includes("object-src 'none'"));
+  assert(indexHtml.includes('https://www.googleapis.com'));
+  assert(indexHtml.includes('https://storage.googleapis.com'));
 }));
 
 checks.push(test('Google services panel exists in UI', () => {
@@ -75,12 +77,15 @@ checks.push(test('Google services panel exists in UI', () => {
   assert(indexHtml.includes('id="gsDiscoveryApiStatus"'));
   assert(indexHtml.includes('id="gsBooksStatus"'));
   assert(indexHtml.includes('id="gsAuthStatus"'));
+  assert(indexHtml.includes('name="google-api-key"'));
 }));
 
 checks.push(test('Google services module verifies Google APIs', () => {
   assert(googleServicesJs.includes('https://storage.googleapis.com/storage/v1/'));
   assert(googleServicesJs.includes('https://www.googleapis.com/discovery/v1/apis'));
   assert(googleServicesJs.includes('https://www.googleapis.com/books/v1/volumes'));
+  assert(googleServicesJs.includes('getConfiguredApiKey'));
+  assert(googleServicesJs.includes('apiKeyConfigured'));
   assert(googleServicesJs.includes('google-client-id'));
   assert(googleServicesJs.includes('data-google-auth-ready'));
   assert(googleServicesJs.includes('app:google-services-status'));
