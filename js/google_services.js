@@ -10,6 +10,9 @@
     storageHost: null,
     storageApiOk: false,
     discoveryApiOk: false,
+    booksApiOk: false,
+    booksQuery: 'election democracy voting',
+    books: [],
   };
 
   function isValidMeasurementId(value) {
@@ -79,6 +82,7 @@
     root.setAttribute('data-google-analytics', state.analyticsEnabled ? 'true' : 'false');
     root.setAttribute('data-google-storage-api', state.storageApiOk ? 'true' : 'false');
     root.setAttribute('data-google-discovery-api', state.discoveryApiOk ? 'true' : 'false');
+    root.setAttribute('data-google-books-api', state.booksApiOk ? 'true' : 'false');
   }
 
   async function verifyStorageApi() {
@@ -101,6 +105,61 @@
     }
   }
 
+  function renderGoogleBooks() {
+    const results = document.getElementById('googleBooksResults');
+    const status = document.getElementById('googleBooksStatus');
+    if (!results || !status) return;
+
+    if (!state.books.length) {
+      results.innerHTML = '';
+      status.textContent = state.booksApiOk
+        ? `No books found for “${state.booksQuery}”. Try another search.`
+        : 'Google Books API unavailable right now.';
+      return;
+    }
+
+    status.textContent = state.booksApiOk
+      ? `Showing ${state.books.length} Google Books results for “${state.booksQuery}”.`
+      : 'Google Books API unavailable right now.';
+
+    results.innerHTML = state.books.map((book) => `
+      <article class="google-book-card">
+        <div class="google-book-title">${book.title}</div>
+        <div class="google-book-meta">
+          ${book.authors}<br/>
+          ${book.publisher}
+        </div>
+      </article>
+    `).join('');
+  }
+
+  async function searchGoogleBooks(query = state.booksQuery) {
+    const normalized = String(query || '').trim();
+    if (!normalized) return;
+
+    state.booksQuery = normalized;
+    const status = document.getElementById('googleBooksStatus');
+    if (status) status.textContent = `Searching Google Books for “${normalized}”…`;
+
+    try {
+      const endpoint = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(normalized)}&maxResults=4&printType=books`;
+      const response = await fetch(endpoint, { method: 'GET' });
+      state.booksApiOk = response.ok;
+      const payload = await response.json();
+      state.books = (payload.items || []).slice(0, 4).map((item) => ({
+        title: item.volumeInfo?.title || 'Untitled',
+        authors: (item.volumeInfo?.authors || ['Unknown author']).join(', '),
+        publisher: item.volumeInfo?.publisher || 'Google Books',
+      }));
+    } catch (_) {
+      state.booksApiOk = false;
+      state.books = [];
+    }
+
+    emitStatus();
+    renderGoogleBooks();
+  }
+
   function emitStatus() {
     const payload = {
       storageHost: state.storageHost,
@@ -108,6 +167,7 @@
       measurementId: state.measurementId,
       storageApiOk: state.storageApiOk,
       discoveryApiOk: state.discoveryApiOk,
+      booksApiOk: state.booksApiOk,
       mapsEnabled: true,
       calendarEnabled: true,
     };
@@ -131,8 +191,21 @@
 
     bindAppEvents();
     await Promise.all([verifyStorageApi(), verifyDiscoveryApi()]);
+    await searchGoogleBooks();
     addStatusBadge();
     emitStatus();
+
+    const input = document.getElementById('googleBooksQuery');
+    const button = document.getElementById('googleBooksSearchBtn');
+    if (input && button) {
+      input.value = state.booksQuery;
+      button.addEventListener('click', () => searchGoogleBooks(input.value));
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter') searchGoogleBooks(input.value);
+      });
+    }
+
+    renderGoogleBooks();
   }
 
   window.initGoogleServices = initGoogleServices;

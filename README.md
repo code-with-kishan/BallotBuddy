@@ -31,7 +31,7 @@
 | 📆 **Google Calendar Integration** | One-click "Add Election Reminder" to Google Calendar |
 | ☁️ **Google Services Instrumentation** | Optional GA4 analytics + Google Cloud Storage environment detection via `google_services.js` |
 | 🔥 **Firebase Ready Integration** | Optional Firebase App + Analytics bootstrap via `firebase_services.js` (credential-driven, graceful fallback) |
-| ✅ **Live Google API Verification** | Home dashboard performs active checks against Google Cloud Storage JSON API and Google Discovery API |
+| ✅ **Live Google API Verification** | Home dashboard performs active checks against Google Cloud Storage JSON API, Google Discovery API, and Google Books API |
 | 🎤 **Voice Input** | Web Speech API voice recognition for hands-free AI queries |
 | 🔊 **Text-to-Speech** | AI responses read aloud using Web Speech Synthesis API |
 | 🌙 **Dark/Light Mode** | Persistent theme toggle stored in localStorage |
@@ -242,6 +242,7 @@ This project now includes explicit rubric-friendly evidence for:
 - **Testing**: built-in executable self-test harness (`selftest.js`)
 - **Accessibility**: semantic roles, keyboard shortcuts, skip-link support, high-contrast mode, reduced-motion support
 - **Google Services**: Google Maps embed, Google Calendar deep links, Google Cloud Storage deployment, optional GA4 instrumentation, optional Firebase analytics integration
+- **Google Services**: Google Maps embed, Google Calendar deep links, Google Cloud Storage deployment, Google Discovery API, Google Books API, optional GA4 instrumentation, optional Firebase analytics integration
 
 ---
 

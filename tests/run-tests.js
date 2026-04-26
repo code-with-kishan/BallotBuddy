@@ -37,11 +37,13 @@ checks.push(test('Google services panel exists in UI', () => {
   assert(indexHtml.includes('id="googleServicesPanel"'));
   assert(indexHtml.includes('id="gsStorageApiStatus"'));
   assert(indexHtml.includes('id="gsDiscoveryApiStatus"'));
+  assert(indexHtml.includes('id="gsBooksStatus"'));
 }));
 
 checks.push(test('Google services module verifies Google APIs', () => {
   assert(googleServicesJs.includes('https://storage.googleapis.com/storage/v1/'));
   assert(googleServicesJs.includes('https://www.googleapis.com/discovery/v1/apis'));
+  assert(googleServicesJs.includes('https://www.googleapis.com/books/v1/volumes'));
   assert(googleServicesJs.includes('app:google-services-status'));
 }));
 

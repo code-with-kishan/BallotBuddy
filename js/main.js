@@ -109,6 +109,15 @@ function applyGoogleServicesStatus(status) {
   if (!status) return;
   setServiceStatusText('gsStorageApiStatus', status.storageApiOk ? 'Connected' : 'Unavailable', status.storageApiOk ? 'status-ok' : 'status-off');
   setServiceStatusText('gsDiscoveryApiStatus', status.discoveryApiOk ? 'Connected' : 'Unavailable', status.discoveryApiOk ? 'status-ok' : 'status-off');
+  if ('booksApiOk' in status) {
+    const label = status.booksApiOk ? 'Connected' : 'Unavailable';
+    const existing = document.getElementById('gsBooksStatus');
+    if (existing) {
+      existing.textContent = label;
+      existing.classList.remove('status-ok', 'status-off');
+      existing.classList.add(status.booksApiOk ? 'status-ok' : 'status-off');
+    }
+  }
   setServiceStatusText('gsCalendarStatus', status.calendarEnabled ? 'Enabled' : 'Disabled', status.calendarEnabled ? 'status-ok' : 'status-off');
   setServiceStatusText('gsMapsStatus', status.mapsEnabled ? 'Enabled' : 'Disabled', status.mapsEnabled ? 'status-ok' : 'status-off');
 }

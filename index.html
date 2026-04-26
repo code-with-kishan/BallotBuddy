@@ -123,10 +123,26 @@
         <ul class="google-services-list">
           <li><span>Google Cloud Storage API</span><strong id="gsStorageApiStatus">Checking...</strong></li>
           <li><span>Google Discovery API</span><strong id="gsDiscoveryApiStatus">Checking...</strong></li>
+          <li><span>Google Books API</span><strong id="gsBooksStatus">Checking...</strong></li>
           <li><span>Firebase Analytics</span><strong id="gsFirebaseStatus">Pending</strong></li>
           <li><span>Google Calendar Deep Link</span><strong id="gsCalendarStatus">Enabled</strong></li>
           <li><span>Google Maps Embed</span><strong id="gsMapsStatus">Enabled</strong></li>
         </ul>
+      </div>
+
+      <div class="google-books-panel animate-fade-in-delay3" id="googleBooksPanel" aria-live="polite">
+        <div class="google-books-head">
+          <div>
+            <h3>Google Books Spotlight</h3>
+            <p class="google-services-subtitle">Live search against Google Books API for election and democracy resources.</p>
+          </div>
+          <div class="google-books-search">
+            <input type="search" id="googleBooksQuery" placeholder="Search Google Books…" aria-label="Search Google Books" />
+            <button type="button" class="btn-outline btn-sm" id="googleBooksSearchBtn">Search</button>
+          </div>
+        </div>
+        <div id="googleBooksStatus" class="google-books-status">Loading popular results…</div>
+        <div id="googleBooksResults" class="google-books-results"></div>
       </div>
     </div>
 
