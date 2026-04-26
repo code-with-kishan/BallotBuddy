@@ -118,6 +118,14 @@ function applyGoogleServicesStatus(status) {
       existing.classList.add(status.booksApiOk ? 'status-ok' : 'status-off');
     }
   }
+  if ('civicApiOk' in status) {
+    const civic = document.getElementById('gsCivicStatus');
+    if (civic) {
+      civic.textContent = status.civicApiOk ? 'Connected' : 'Unavailable';
+      civic.classList.remove('status-ok', 'status-off');
+      civic.classList.add(status.civicApiOk ? 'status-ok' : 'status-off');
+    }
+  }
   setServiceStatusText('gsCalendarStatus', status.calendarEnabled ? 'Enabled' : 'Disabled', status.calendarEnabled ? 'status-ok' : 'status-off');
   setServiceStatusText('gsMapsStatus', status.mapsEnabled ? 'Enabled' : 'Disabled', status.mapsEnabled ? 'status-ok' : 'status-off');
 }

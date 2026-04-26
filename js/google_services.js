@@ -13,8 +13,10 @@
     storageApiOk: false,
     discoveryApiOk: false,
     booksApiOk: false,
+    civicApiOk: false,
     booksQuery: 'election democracy voting',
     books: [],
+    civicElections: [],
   };
 
   function isValidMeasurementId(value) {
@@ -99,8 +101,53 @@
     root.setAttribute('data-google-storage-api', state.storageApiOk ? 'true' : 'false');
     root.setAttribute('data-google-discovery-api', state.discoveryApiOk ? 'true' : 'false');
     root.setAttribute('data-google-books-api', state.booksApiOk ? 'true' : 'false');
+    root.setAttribute('data-google-civic-api', state.civicApiOk ? 'true' : 'false');
     root.setAttribute('data-google-auth-ready', state.clientId ? 'true' : 'false');
     root.setAttribute('data-google-api-key', state.apiKey ? 'true' : 'false');
+  }
+
+  function renderCivicResults() {
+    const status = document.getElementById('googleCivicStatus');
+    const results = document.getElementById('googleCivicResults');
+    if (!status || !results) return;
+
+    if (!state.civicElections.length) {
+      status.textContent = state.civicApiOk
+        ? 'Civic API connected, but no elections were returned.'
+        : 'Google Civic API unavailable right now.';
+      results.innerHTML = '';
+      return;
+    }
+
+    status.textContent = `Showing ${state.civicElections.length} election records from Google Civic API.`;
+    results.innerHTML = state.civicElections.map((election) => `
+      <article class="google-book-card">
+        <div class="google-book-title">${election.name}</div>
+        <div class="google-book-meta">
+          Election Day: ${election.date}<br/>
+          Scope: ${election.scope || 'General'}
+        </div>
+      </article>
+    `).join('');
+  }
+
+  async function verifyCivicApi() {
+    try {
+      const keyQuery = state.apiKey ? `?key=${encodeURIComponent(state.apiKey)}` : '';
+      const endpoint = `https://www.googleapis.com/civicinfo/v2/elections${keyQuery}`;
+      const response = await fetch(endpoint, { method: 'GET' });
+      state.civicApiOk = response.ok;
+      const payload = await response.json();
+      state.civicElections = (payload.elections || []).slice(0, 4).map((item) => ({
+        name: item.name || 'Election',
+        date: item.electionDay || 'TBD',
+        scope: item.ocdDivisionId || '',
+      }));
+    } catch (_) {
+      state.civicApiOk = false;
+      state.civicElections = [];
+    }
+    renderCivicResults();
   }
 
   async function verifyStorageApi() {
@@ -189,6 +236,7 @@
       storageApiOk: state.storageApiOk,
       discoveryApiOk: state.discoveryApiOk,
       booksApiOk: state.booksApiOk,
+      civicApiOk: state.civicApiOk,
       authReady: Boolean(state.clientId),
       mapsEnabled: true,
       calendarEnabled: true,
@@ -216,6 +264,7 @@
     bindAppEvents();
     await Promise.all([verifyStorageApi(), verifyDiscoveryApi()]);
     await searchGoogleBooks();
+    await verifyCivicApi();
     addStatusBadge();
     emitStatus();
 

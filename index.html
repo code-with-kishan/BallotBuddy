@@ -9,7 +9,7 @@
   <meta name="keywords" content="election guide, voting assistant, election process, voter registration, polling station" />
   <meta name="google-analytics-id" content="" />
   <meta name="google-client-id" content="" />
-  <meta name="google-api-key" content="AIzaSyBvG6R82KNzOOpUpqKGQsgGQoMRWB7RWUs" />
+  <meta name="google-api-key" content="REDACTED_GOOGLE_API_KEY" />
   <meta name="firebase-api-key" content="" />
   <meta name="firebase-auth-domain" content="" />
   <meta name="firebase-project-id" content="" />
@@ -127,6 +127,7 @@
           <li><span>Google Cloud Storage API</span><strong id="gsStorageApiStatus">Checking...</strong></li>
           <li><span>Google Discovery API</span><strong id="gsDiscoveryApiStatus">Checking...</strong></li>
           <li><span>Google Books API</span><strong id="gsBooksStatus">Checking...</strong></li>
+          <li><span>Google Civic API</span><strong id="gsCivicStatus">Checking...</strong></li>
           <li><span>Firebase Analytics</span><strong id="gsFirebaseStatus">Pending</strong></li>
           <li><span>Google Calendar Deep Link</span><strong id="gsCalendarStatus">Enabled</strong></li>
           <li><span>Google Maps Embed</span><strong id="gsMapsStatus">Enabled</strong></li>
@@ -146,6 +147,13 @@
         </div>
         <div id="googleBooksStatus" class="google-books-status">Loading popular results…</div>
         <div id="googleBooksResults" class="google-books-results"></div>
+      </div>
+
+      <div class="google-books-panel animate-fade-in-delay3" id="googleCivicPanel" aria-live="polite">
+        <h3>Google Civic Information Live</h3>
+        <p class="google-services-subtitle">Authenticated Civic API call for election discovery.</p>
+        <div id="googleCivicStatus" class="google-books-status">Loading election feed…</div>
+        <div id="googleCivicResults" class="google-books-results"></div>
       </div>
 
       <div class="google-auth-panel animate-fade-in-delay3" id="googleAuthPanel" aria-live="polite">

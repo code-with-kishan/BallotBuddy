@@ -124,6 +124,12 @@ testSync('Reduced-motion support exists', () => {
   testSync(`Google services implementation marker: ${needle}`, () => assert(googleServicesJs.includes(needle)), result);
 });
 
+testSync('Google Civic API integration marker present', () => {
+  assert(googleServicesJs.includes('https://www.googleapis.com/civicinfo/v2/elections'));
+  assert(googleServicesJs.includes('civicApiOk'));
+  assert(indexHtml.includes('id="gsCivicStatus"'));
+}, result);
+
 testSync('Firebase status event hook present', () => {
   assert(firebaseServicesJs.includes('app:firebase-services-status'));
 }, result);
@@ -161,6 +167,12 @@ testSync('Firebase status event hook present', () => {
     const payload = await fetchJson('https://storage.googleapis.com/storage/v1/b/ballotbuddy01-500387404664-site/o/index.html');
     assert(payload.kind === 'storage#object');
     assert(payload.name === 'index.html');
+  }, result);
+
+  await testAsync('Live Google Civic API responds', async () => {
+    const payload = await fetchJson('https://www.googleapis.com/civicinfo/v2/elections?key=REDACTED_GOOGLE_API_KEY');
+    assert(payload.kind === 'civicinfo#electionsQueryResponse');
+    assert(Array.isArray(payload.elections));
   }, result);
 
   await testAsync('Live app URL reachable', async () => {
