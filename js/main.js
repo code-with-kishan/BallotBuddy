@@ -97,6 +97,110 @@ function setupCardKeyboardNavigation() {
   });
 }
 
+function setupDelegatedActions() {
+  document.addEventListener('click', (event) => {
+    const actionEl = event.target.closest('[data-action]');
+    if (!actionEl) return;
+
+    const action = actionEl.dataset.action;
+
+    switch (action) {
+      case 'navigate': {
+        event.preventDefault();
+        const target = actionEl.dataset.target;
+        if (target) navigateTo(target);
+        break;
+      }
+      case 'quick-prompt': {
+        event.preventDefault();
+        const prompt = actionEl.dataset.prompt;
+        if (prompt && typeof sendQuickPrompt === 'function') sendQuickPrompt(prompt);
+        break;
+      }
+      case 'apply-personalization':
+        event.preventDefault();
+        if (typeof applyPersonalization === 'function') applyPersonalization();
+        break;
+      case 'send-message':
+        event.preventDefault();
+        if (typeof sendMessage === 'function') sendMessage();
+        break;
+      case 'add-to-calendar':
+        event.preventDefault();
+        if (typeof addToCalendar === 'function') addToCalendar();
+        break;
+      case 'set-faq-category': {
+        event.preventDefault();
+        const category = actionEl.dataset.category;
+        if (category && typeof setFaqCategory === 'function') setFaqCategory(category);
+        break;
+      }
+      case 'toggle-faq': {
+        event.preventDefault();
+        const id = Number.parseInt(actionEl.dataset.id || '', 10);
+        if (Number.isInteger(id) && typeof toggleFaq === 'function') toggleFaq(id);
+        break;
+      }
+      case 'toggle-step': {
+        event.preventDefault();
+        const id = Number.parseInt(actionEl.dataset.id || '', 10);
+        if (Number.isInteger(id) && typeof toggleStep === 'function') toggleStep(id);
+        break;
+      }
+      case 'mark-step-done': {
+        event.preventDefault();
+        const id = Number.parseInt(actionEl.dataset.id || '', 10);
+        if (Number.isInteger(id) && typeof markStepDone === 'function') markStepDone(id, actionEl);
+        break;
+      }
+      case 'ask-step': {
+        event.preventDefault();
+        const stepTitle = decodeURIComponent(actionEl.dataset.stepTitle || '');
+        if (stepTitle && typeof askAboutStep === 'function') askAboutStep(stepTitle);
+        break;
+      }
+      case 'search-polling-stations':
+        event.preventDefault();
+        if (typeof searchPollingStations === 'function') searchPollingStations();
+        break;
+      case 'use-location':
+        event.preventDefault();
+        if (typeof useMyLocation === 'function') useMyLocation();
+        break;
+      case 'open-maps': {
+        event.preventDefault();
+        const query = actionEl.dataset.query;
+        if (query && typeof openInMaps === 'function') openInMaps(query);
+        break;
+      }
+      case 'get-directions': {
+        event.preventDefault();
+        const query = actionEl.dataset.query;
+        if (query && typeof getDirections === 'function') getDirections(query);
+        break;
+      }
+    }
+  });
+
+  document.addEventListener('change', (event) => {
+    const actionEl = event.target.closest('[data-change-action]');
+    if (!actionEl) return;
+
+    if (actionEl.dataset.changeAction === 'render-timeline' && typeof renderTimeline === 'function') {
+      renderTimeline();
+    }
+  });
+
+  document.addEventListener('input', (event) => {
+    const actionEl = event.target.closest('[data-input-action]');
+    if (!actionEl) return;
+
+    if (actionEl.dataset.inputAction === 'filter-faq' && typeof filterFAQ === 'function') {
+      filterFAQ();
+    }
+  });
+}
+
 function setServiceStatusText(id, text, className) {
   const el = document.getElementById(id);
   if (!el) return;
@@ -375,6 +479,7 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Keyboard shortcuts ──────────────────────────────── */
   setupKeyboardShortcuts();
   setupCardKeyboardNavigation();
+  setupDelegatedActions();
 
   if (typeof initGoogleServices === 'function') {
     initGoogleServices();
@@ -400,9 +505,6 @@ document.addEventListener('DOMContentLoaded', () => {
   /* ── Hash routing ────────────────────────────────────── */
   handleHashRouting();
   window.addEventListener('hashchange', handleHashRouting);
-
-  /* ── Home section "Start Chat" button (direct DOM bind) */
-  document.getElementById('startChatBtn')?.addEventListener('click', () => navigateTo('assistant'));
 
   /* ── Initial progress nudge ──────────────────────────── */
   setTimeout(() => {

@@ -15,6 +15,28 @@
 ## 📌 Chosen Vertical
 **Election Process Education** — Empowering citizens to understand, participate in, and engage meaningfully with the democratic process through interactive AI-driven guidance.
 
+## 🧩 Problem Statement
+Many first-time and occasional voters do not participate confidently because election information is fragmented, technical, and difficult to navigate quickly. Citizens often struggle with:
+
+- determining eligibility rules for their context,
+- understanding exact registration and voting steps,
+- identifying required documents and deadlines,
+- separating myths from verified election facts,
+- and locating practical resources like polling stations and reminders.
+
+This creates avoidable voter confusion and lower-quality civic participation.
+
+## ✅ Solution Alignment
+ElectionGuide AI directly addresses this by providing a single, guided experience that converts election complexity into clear actions:
+
+- personalized eligibility and guidance through AI chat,
+- structured step-by-step workflows from registration to counting,
+- searchable FAQs and myth-busting explanations,
+- timeline and calendar reminders for key dates,
+- and polling-station discovery with map support.
+
+Primary outcome target: reduce voter confusion and increase voter readiness with clear, accessible, and actionable election guidance.
+
 ---
 
 ## ✨ Features Overview
@@ -191,6 +213,12 @@ After setting these values, the app initializes Firebase and logs app/section/er
 - No cookies set; only `localStorage` used for theme preference
 - External links open with `rel="noopener noreferrer"` to prevent tab-napping
 - Google Maps iframes use `referrerpolicy="no-referrer-when-downgrade"`
+
+### Secret Management Policy
+
+- No live API keys are committed in source files.
+- Local and CI checks fail if a Google API key pattern is detected.
+- Exposed keys must be rotated and revoked immediately in Google Cloud.
 
 ---
 

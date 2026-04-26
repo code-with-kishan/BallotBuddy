@@ -13,7 +13,8 @@ function renderFaqCategories() {
   container.innerHTML = FAQ_CATEGORIES.map(cat => `
     <button
       class="faq-cat-btn ${cat === activeFaqCategory ? 'active' : ''}"
-      onclick="setFaqCategory('${cat}')"
+      data-action="set-faq-category"
+      data-category="${cat}"
       aria-pressed="${cat === activeFaqCategory}"
     >${cat}</button>
   `).join('');
@@ -56,7 +57,8 @@ function renderFaqList(filter = '') {
     <div
       class="faq-item ${openFaqId === faq.id ? 'open' : ''}"
       id="faq-${faq.id}"
-      onclick="toggleFaq(${faq.id})"
+      data-action="toggle-faq"
+      data-id="${faq.id}"
       role="button"
       aria-expanded="${openFaqId === faq.id}"
       tabindex="0"

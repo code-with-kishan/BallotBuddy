@@ -19,6 +19,21 @@ function countMatches(source, re) {
   return matches ? matches.length : 0;
 }
 
+function listFilesRecursive(dirPath) {
+  const entries = fs.readdirSync(dirPath, { withFileTypes: true });
+  const out = [];
+  entries.forEach((entry) => {
+    if (entry.name === '.git' || entry.name === 'node_modules') return;
+    const fullPath = path.join(dirPath, entry.name);
+    if (entry.isDirectory()) {
+      out.push(...listFilesRecursive(fullPath));
+      return;
+    }
+    out.push(fullPath);
+  });
+  return out;
+}
+
 function fetch(url) {
   return new Promise((resolve, reject) => {
     https.get(url, (response) => {
@@ -97,6 +112,35 @@ testSync('Chat user messages are text-rendered', () => {
 
 testSync('No hardcoded Google Maps v1 API key embed URL remains', () => {
   assert(!indexHtml.includes('maps/embed/v1/search?key='));
+}, result);
+
+testSync('No leaked Google API key literal remains', () => {
+  const leakedKey = ['AIza', 'SyD3sNWADgN8FX_BRsWx7LfhzgefHekwVlM'].join('');
+  const files = listFilesRecursive(root);
+  const hit = files.find((absPath) => {
+    try {
+      return fs.readFileSync(absPath, 'utf8').includes(leakedKey);
+    } catch {
+      return false;
+    }
+  });
+  assert(!hit, `Leaked key found in ${hit}`);
+}, result);
+
+testSync('No hardcoded Google API key patterns in source', () => {
+  const apiKeyPattern = /AIza[0-9A-Za-z_-]{35}/;
+  const files = listFilesRecursive(root)
+    .map((absPath) => path.relative(root, absPath))
+    .filter((relPath) => {
+      return relPath.startsWith('js/') || relPath.startsWith('tests/') || relPath === 'index.html';
+    });
+
+  const offenders = files.filter((relPath) => {
+    const content = read(relPath);
+    return apiKeyPattern.test(content);
+  });
+
+  assert(offenders.length === 0, `Hardcoded key pattern found in: ${offenders.join(', ')}`);
 }, result);
 
 ['class="skip-link"', 'aria-label="Main Navigation"', 'aria-live="polite"'].forEach((needle) => {

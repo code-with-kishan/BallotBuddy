@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.gstatic.com https://accounts.google.com 'unsafe-inline'; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.googleapis.com https://storage.googleapis.com https://www.google-analytics.com https://region1.google-analytics.com https://firebaseinstallations.googleapis.com; frame-src https://maps.google.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.googletagmanager.com https://www.gstatic.com https://accounts.google.com; style-src 'self' https://fonts.googleapis.com 'unsafe-inline'; font-src https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://www.googleapis.com https://storage.googleapis.com https://www.google-analytics.com https://region1.google-analytics.com https://firebaseinstallations.googleapis.com; frame-src https://maps.google.com https://www.google.com; object-src 'none'; base-uri 'self'; form-action 'self'" />
   <meta name="referrer" content="strict-origin-when-cross-origin" />
   <meta name="description" content="ElectionGuide AI – Your intelligent assistant for understanding the election process, timelines, eligibility, and voting guidance." />
   <meta name="keywords" content="election guide, voting assistant, election process, voter registration, polling station" />
@@ -92,10 +92,10 @@
       </p>
 
       <div class="hero-cta animate-fade-in-delay2">
-        <button class="btn-primary" id="startChatBtn" onclick="navigateTo('assistant')">
+          <button class="btn-primary" id="startChatBtn" data-action="navigate" data-target="assistant">
           💬 Start AI Chat
         </button>
-        <button class="btn-secondary" onclick="navigateTo('guide')">
+          <button class="btn-secondary" data-action="navigate" data-target="guide">
           📋 View Election Guide
         </button>
       </div>
@@ -170,25 +170,25 @@
 
     <!-- Feature Cards -->
     <div class="features-grid">
-      <div class="feature-card" role="button" tabindex="0" data-nav-target="assistant" aria-label="Open AI Assistant section" onclick="navigateTo('assistant')">
+      <div class="feature-card" role="button" tabindex="0" data-nav-target="assistant" aria-label="Open AI Assistant section" data-action="navigate" data-target="assistant">
         <div class="feature-icon">🤖</div>
         <h3>AI Chat Assistant</h3>
         <p>Get personalized answers to all your election questions in real-time.</p>
         <span class="feature-link">Try Now →</span>
       </div>
-      <div class="feature-card" role="button" tabindex="0" data-nav-target="guide" aria-label="Open Election Guide section" onclick="navigateTo('guide')">
+      <div class="feature-card" role="button" tabindex="0" data-nav-target="guide" aria-label="Open Election Guide section" data-action="navigate" data-target="guide">
         <div class="feature-icon">📋</div>
         <h3>Step-by-Step Guide</h3>
         <p>Follow an interactive journey through every stage of the election process.</p>
         <span class="feature-link">Explore →</span>
       </div>
-      <div class="feature-card" role="button" tabindex="0" data-nav-target="timeline" aria-label="Open Timeline section" onclick="navigateTo('timeline')">
+      <div class="feature-card" role="button" tabindex="0" data-nav-target="timeline" aria-label="Open Timeline section" data-action="navigate" data-target="timeline">
         <div class="feature-icon">📅</div>
         <h3>Timeline Visualizer</h3>
         <p>See all critical election dates on a beautiful interactive timeline.</p>
         <span class="feature-link">View →</span>
       </div>
-      <div class="feature-card" role="button" tabindex="0" data-nav-target="map" aria-label="Open Polling Stations section" onclick="navigateTo('map')">
+      <div class="feature-card" role="button" tabindex="0" data-nav-target="map" aria-label="Open Polling Stations section" data-action="navigate" data-target="map">
         <div class="feature-icon">📍</div>
         <h3>Polling Stations</h3>
         <p>Find your nearest polling station with our interactive map viewer.</p>
@@ -209,14 +209,14 @@
       <div class="chat-sidebar">
         <div class="chat-sidebar-title">Quick Questions</div>
         <div class="quick-prompts" id="quickPrompts">
-          <button class="quick-btn" onclick="sendQuickPrompt('Am I eligible to vote?')">Am I eligible to vote?</button>
-          <button class="quick-btn" onclick="sendQuickPrompt('How do I register to vote?')">How do I register?</button>
-          <button class="quick-btn" onclick="sendQuickPrompt('What documents do I need?')">What documents do I need?</button>
-          <button class="quick-btn" onclick="sendQuickPrompt('When is the next election?')">When is the next election?</button>
-          <button class="quick-btn" onclick="sendQuickPrompt('How does counting work?')">How does counting work?</button>
-          <button class="quick-btn" onclick="sendQuickPrompt('Can I vote online?')">Can I vote online?</button>
-          <button class="quick-btn" onclick="sendQuickPrompt('What is a polling booth?')">What is a polling booth?</button>
-          <button class="quick-btn" onclick="sendQuickPrompt('I am a first time voter')">First-time voter tips</button>
+            <button class="quick-btn" data-action="quick-prompt" data-prompt="Am I eligible to vote?">Am I eligible to vote?</button>
+            <button class="quick-btn" data-action="quick-prompt" data-prompt="How do I register to vote?">How do I register?</button>
+            <button class="quick-btn" data-action="quick-prompt" data-prompt="What documents do I need?">What documents do I need?</button>
+            <button class="quick-btn" data-action="quick-prompt" data-prompt="When is the next election?">When is the next election?</button>
+            <button class="quick-btn" data-action="quick-prompt" data-prompt="How does counting work?">How does counting work?</button>
+            <button class="quick-btn" data-action="quick-prompt" data-prompt="Can I vote online?">Can I vote online?</button>
+            <button class="quick-btn" data-action="quick-prompt" data-prompt="What is a polling booth?">What is a polling booth?</button>
+            <button class="quick-btn" data-action="quick-prompt" data-prompt="I am a first time voter">First-time voter tips</button>
         </div>
 
         <div class="chat-sidebar-title" style="margin-top:1.5rem">Personalize</div>
@@ -239,7 +239,7 @@
             <option value="yes">Yes, first time!</option>
             <option value="no">No, voted before</option>
           </select>
-          <button class="btn-primary btn-sm" onclick="applyPersonalization()" id="applyPersonalizeBtn">Apply ✓</button>
+            <button class="btn-primary btn-sm" data-action="apply-personalization" id="applyPersonalizeBtn">Apply ✓</button>
         </div>
       </div>
 
@@ -260,7 +260,7 @@
               aria-label="Chat message input"
             ></textarea>
           </div>
-          <button class="send-btn" id="sendBtn" onclick="sendMessage()" aria-label="Send message">
+            <button class="send-btn" id="sendBtn" data-action="send-message" aria-label="Send message">
             <span>➤</span>
           </button>
         </div>
@@ -288,8 +288,8 @@
     </div>
 
     <div class="timeline-controls">
-      <button class="btn-outline" onclick="addToCalendar()" id="calendarBtn">📆 Add to Google Calendar</button>
-      <select id="timelineCountry" onchange="renderTimeline()" aria-label="Select country for timeline">
+      <button class="btn-outline" data-action="add-to-calendar" id="calendarBtn">📆 Add to Google Calendar</button>
+      <select id="timelineCountry" data-change-action="render-timeline" aria-label="Select country for timeline">
         <option value="India">India 🇮🇳</option>
         <option value="USA">United States 🇺🇸</option>
         <option value="UK">United Kingdom 🇬🇧</option>
@@ -313,7 +313,7 @@
     </div>
 
     <div class="faq-search-wrap">
-      <input type="search" id="faqSearch" placeholder="🔍 Search FAQs…" oninput="filterFAQ()" aria-label="Search FAQ" />
+      <input type="search" id="faqSearch" placeholder="🔍 Search FAQs…" data-input-action="filter-faq" aria-label="Search FAQ" />
     </div>
 
     <div class="faq-categories" id="faqCategories">
@@ -326,7 +326,7 @@
 
     <div class="faq-empty" id="faqEmpty" style="display:none">
       <div class="empty-icon">🔍</div>
-      <p>No FAQs match your search. Try asking the <a href="#" onclick="navigateTo('assistant')">AI Assistant</a>!</p>
+      <p>No FAQs match your search. Try asking the <a href="#" data-action="navigate" data-target="assistant">AI Assistant</a>!</p>
     </div>
   </section>
 
@@ -352,8 +352,8 @@
     <div class="map-container">
       <div class="map-filters">
         <input type="text" id="mapSearch" placeholder="Enter your area / pincode…" aria-label="Search polling stations" />
-        <button class="btn-primary btn-sm" onclick="searchPollingStations()" id="mapSearchBtn">🔍 Search</button>
-        <button class="btn-outline btn-sm" onclick="useMyLocation()" id="locationBtn">📡 Use My Location</button>
+          <button class="btn-primary btn-sm" data-action="search-polling-stations" id="mapSearchBtn">🔍 Search</button>
+          <button class="btn-outline btn-sm" data-action="use-location" id="locationBtn">📡 Use My Location</button>
       </div>
 
       <!-- Embedded Google Map (iframe) -->

@@ -21,7 +21,7 @@ function renderGuide() {
     card.setAttribute('tabindex', '0');
 
     card.innerHTML = `
-      <div class="step-header" onclick="toggleStep(${step.id})">
+      <div class="step-header" data-action="toggle-step" data-id="${step.id}">
         <div class="step-number" style="background:${step.color}; color:#fff; box-shadow: 0 4px 20px rgba(0,0,0,0.25);">
           ${step.icon}
         </div>
@@ -52,8 +52,8 @@ function renderGuide() {
         </div>
         <div class="step-tip">${step.tip}</div>
         <div style="margin-top:1rem; display:flex; gap:.75rem; flex-wrap:wrap;">
-          <button class="btn-primary btn-sm" onclick="markStepDone(${step.id}, this)">✅ Mark as Done</button>
-          <button class="btn-outline btn-sm" onclick="askAboutStep('${step.title}')">💬 Ask AI About This</button>
+          <button class="btn-primary btn-sm" data-action="mark-step-done" data-id="${step.id}">✅ Mark as Done</button>
+          <button class="btn-outline btn-sm" data-action="ask-step" data-step-title="${encodeURIComponent(step.title)}">💬 Ask AI About This</button>
         </div>
       </div>
     `;

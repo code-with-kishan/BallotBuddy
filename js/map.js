@@ -28,10 +28,10 @@ function renderPollingStations(stations = POLLING_STATIONS) {
         ${st.tags.map(tag => `<span class="station-tag">${tag}</span>`).join('')}
       </div>
       <div style="margin-top:.85rem;display:flex;gap:.5rem;flex-wrap:wrap;">
-        <button class="btn-outline btn-sm" onclick="openInMaps('${encodeURIComponent(st.name + ', ' + st.addr)}')">
+        <button class="btn-outline btn-sm" data-action="open-maps" data-query="${encodeURIComponent(st.name + ', ' + st.addr)}">
           🗺️ Open in Maps
         </button>
-        <button class="btn-outline btn-sm" onclick="getDirections('${encodeURIComponent(st.addr)}')">
+        <button class="btn-outline btn-sm" data-action="get-directions" data-query="${encodeURIComponent(st.addr)}">
           🧭 Directions
         </button>
       </div>

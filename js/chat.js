@@ -181,7 +181,7 @@ function generateResponse(input) {
         <span class="eligibility-tag eligible">✅ Eligible to Vote</span>
         <br/><br/>
         Based on your age, here are your next steps:<br/>
-        1. <a href="#" onclick="navigateTo('guide')">📋 Check the registration steps</a><br/>
+        1. <a href="#" data-action="navigate" data-target="guide">📋 Check the registration steps</a><br/>
         2. Ensure you're enrolled in the voter list<br/>
         3. Gather your documents<br/><br/>
         Would you like to tell me your <strong>country</strong> for more specific advice?`;
@@ -226,7 +226,7 @@ function generateResponse(input) {
       <strong>Eligibility criteria (${country}):</strong><br/>
       ${getEligibilityRules(country)}
       <br/><br/>
-      <a href="#" onclick="navigateTo('guide')">→ See the Full Registration Guide</a>`;
+      <a href="#" data-action="navigate" data-target="guide">→ See the Full Registration Guide</a>`;
     }
     if (prof.age && prof.age < 18) {
       return `At <strong>${prof.age} years old</strong>, you are not yet eligible. You need to be <strong>18 years or older</strong>.
@@ -258,7 +258,7 @@ function generateResponse(input) {
     5. 🗳️ Press the button next to your chosen candidate on the EVM<br/>
     6. 📄 Verify the VVPAT slip (visible for 7 seconds)<br/>
     7. ✅ Done — you've voted!<br/><br/>
-    <a href="#" onclick="navigateTo('guide')">→ See the complete interactive guide</a>`;
+    <a href="#" data-action="navigate" data-target="guide">→ See the complete interactive guide</a>`;
   }
 
   /* ─ EVM / Technology ─────────────────────────────────── */
@@ -298,15 +298,15 @@ function generateResponse(input) {
     ☑️ Carry your Voter ID + alternate proof<br/>
     ☑️ Follow the queue, wait for your turn<br/>
     ☑️ Ink your finger → Get ballot slip → Vote on EVM<br/><br/>
-    <a href="#" onclick="navigateTo('guide')">→ See the Full Interactive Guide</a>`;
+    <a href="#" data-action="navigate" data-target="guide">→ See the Full Interactive Guide</a>`;
   }
 
   /* ─ Timeline / deadlines ─────────────────────────────── */
   if (kb.timeline.some(k => text.includes(k))) {
     return `📅 <strong>Key Election Dates (${country}):</strong><br/><br/>
     ${getTimelineSummary(country)}<br/><br/>
-    <a href="#" onclick="navigateTo('timeline')">→ View Full Interactive Timeline</a><br/>
-    You can also <a href="#" onclick="addToCalendar()">📆 add reminders to Google Calendar</a>!`;
+    <a href="#" data-action="navigate" data-target="timeline">→ View Full Interactive Timeline</a><br/>
+    You can also <a href="#" data-action="add-to-calendar">📆 add reminders to Google Calendar</a>!`;
   }
 
   /* ─ Results / counting ───────────────────────────────── */
@@ -332,7 +332,7 @@ function generateResponse(input) {
     ✅ Multiple rounds of mock polls before election<br/>
     ✅ Candidate/agent-witnessed sealing and storage<br/><br/>
     <strong>Your vote is also 100% secret</strong> — no one can trace which button you pressed.<br/><br/>
-    <a onclick="navigateTo('myths')" href="#">→ See all Myth vs Fact busters</a>`;
+    <a href="#" data-action="navigate" data-target="myths">→ See all Myth vs Fact busters</a>`;
   }
 
   /* ─ Polling stations / map ───────────────────────────── */
@@ -341,7 +341,7 @@ function generateResponse(input) {
     <strong>Step 1:</strong> Visit <a href="https://electoralsearch.eci.gov.in" target="_blank" rel="noopener">electoralsearch.eci.gov.in</a> (India)<br/>
     <strong>Step 2:</strong> Enter your name, state, assembly constituency<br/>
     <strong>Step 3:</strong> Your booth address will be shown<br/><br/>
-    Or use our <a href="#" onclick="navigateTo('map')">📍 interactive Polling Station Finder</a> here!<br/><br/>
+    Or use our <a href="#" data-action="navigate" data-target="map">📍 interactive Polling Station Finder</a> here!<br/><br/>
     💡 Your polling booth is in your own constituency — you <strong>cannot</strong> vote at any other booth.`;
   }
 
@@ -440,7 +440,7 @@ function getRegistrationResponse(country) {
     • Address proof<br/>
     • Passport photo<br/><br/>
     <strong>Track status:</strong> You'll get a reference number — check status on NVSP portal within 30 days.<br/><br/>
-    <a href="#" onclick="navigateTo('guide')">→ Full Step-by-Step Guide</a>`,
+    <a href="#" data-action="navigate" data-target="guide">→ Full Step-by-Step Guide</a>`,
     USA: `<strong>How to Register in USA:</strong><br/><br/>
     🌐 Visit <a href="https://vote.gov" target="_blank" rel="noopener">vote.gov</a> and select your state<br/>
     🏛️ Or register at your local DMV, post office, or state election office<br/><br/>
@@ -486,7 +486,7 @@ function getFallbackResponse(text) {
     • "When is the registration deadline?"`,
     `Great question! Let me help. Could you be a bit more specific?<br/><br/>
     I can help with <strong>registration, eligibility, voting process, documents, timelines,</strong> and more.<br/><br/>
-    Or <a href="#" onclick="navigateTo('faq')">browse our FAQ section</a> for quick answers!`,
+    Or <a href="#" data-action="navigate" data-target="faq">browse our FAQ section</a> for quick answers!`,
     `I want to make sure I give you the right answer! Could you ask that in a different way?<br/><br/>
     <em>Tip: Use the Quick Questions panel on the left for common queries!</em>`,
   ];
