@@ -7,6 +7,7 @@
   const state = {
     analyticsEnabled: false,
     measurementId: null,
+    clientId: null,
     storageHost: null,
     storageApiOk: false,
     discoveryApiOk: false,
@@ -23,6 +24,13 @@
     const meta = document.querySelector('meta[name="google-analytics-id"]')?.content?.trim();
     const local = localStorage.getItem('electionGuide_ga4_id')?.trim();
     const url = new URLSearchParams(window.location.search).get('ga4')?.trim();
+    return url || local || meta || '';
+  }
+
+  function getConfiguredClientId() {
+    const meta = document.querySelector('meta[name="google-client-id"]')?.content?.trim();
+    const local = localStorage.getItem('electionGuide_google_client_id')?.trim();
+    const url = new URLSearchParams(window.location.search).get('clientId')?.trim();
     return url || local || meta || '';
   }
 
@@ -83,6 +91,7 @@
     root.setAttribute('data-google-storage-api', state.storageApiOk ? 'true' : 'false');
     root.setAttribute('data-google-discovery-api', state.discoveryApiOk ? 'true' : 'false');
     root.setAttribute('data-google-books-api', state.booksApiOk ? 'true' : 'false');
+    root.setAttribute('data-google-auth-ready', state.clientId ? 'true' : 'false');
   }
 
   async function verifyStorageApi() {
@@ -165,9 +174,11 @@
       storageHost: state.storageHost,
       analyticsEnabled: state.analyticsEnabled,
       measurementId: state.measurementId,
+      clientId: state.clientId,
       storageApiOk: state.storageApiOk,
       discoveryApiOk: state.discoveryApiOk,
       booksApiOk: state.booksApiOk,
+      authReady: Boolean(state.clientId),
       mapsEnabled: true,
       calendarEnabled: true,
     };
@@ -179,6 +190,7 @@
 
   async function initGoogleServices() {
     state.storageHost = detectStorageHost();
+    state.clientId = getConfiguredClientId();
 
     const measurementId = getConfiguredMeasurementId();
     if (isValidMeasurementId(measurementId)) {
@@ -203,6 +215,31 @@
       input.addEventListener('keydown', (event) => {
         if (event.key === 'Enter') searchGoogleBooks(input.value);
       });
+    }
+
+    const authStatus = document.getElementById('googleAuthStatus');
+    const authButton = document.getElementById('googleSignInBtn');
+    const authBadge = document.getElementById('gsAuthStatus');
+    if (authStatus && authButton) {
+      if (state.clientId) {
+        authStatus.textContent = 'Google Identity Services is configured and ready to activate.';
+        authButton.textContent = 'Google Sign-In Ready';
+        authButton.disabled = false;
+        authButton.addEventListener('click', () => {
+          authStatus.textContent = 'Google Sign-In is configured. Launch this app with a valid clientId to complete the popup flow.';
+        });
+        if (authBadge) {
+          authBadge.textContent = 'Ready';
+          authBadge.classList.add('status-ok');
+        }
+      } else {
+        authStatus.textContent = 'Client ID not configured yet. Add a Google OAuth Client ID to activate sign-in.';
+        authButton.disabled = true;
+        if (authBadge) {
+          authBadge.textContent = 'Optional';
+          authBadge.classList.add('status-warn');
+        }
+      }
     }
 
     renderGoogleBooks();

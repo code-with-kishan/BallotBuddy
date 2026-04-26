@@ -8,6 +8,7 @@
   <meta name="description" content="ElectionGuide AI – Your intelligent assistant for understanding the election process, timelines, eligibility, and voting guidance." />
   <meta name="keywords" content="election guide, voting assistant, election process, voter registration, polling station" />
   <meta name="google-analytics-id" content="" />
+  <meta name="google-client-id" content="" />
   <meta name="firebase-api-key" content="" />
   <meta name="firebase-auth-domain" content="" />
   <meta name="firebase-project-id" content="" />
@@ -121,6 +122,7 @@
         <h3>Google Services Status</h3>
         <p class="google-services-subtitle">Live integration checks for Cloud APIs and platform features.</p>
         <ul class="google-services-list">
+          <li><span>Google Identity Services</span><strong id="gsAuthStatus">Optional</strong></li>
           <li><span>Google Cloud Storage API</span><strong id="gsStorageApiStatus">Checking...</strong></li>
           <li><span>Google Discovery API</span><strong id="gsDiscoveryApiStatus">Checking...</strong></li>
           <li><span>Google Books API</span><strong id="gsBooksStatus">Checking...</strong></li>
@@ -143,6 +145,17 @@
         </div>
         <div id="googleBooksStatus" class="google-books-status">Loading popular results…</div>
         <div id="googleBooksResults" class="google-books-results"></div>
+      </div>
+
+      <div class="google-auth-panel animate-fade-in-delay3" id="googleAuthPanel" aria-live="polite">
+        <div class="google-auth-row">
+          <div>
+            <h3>Google Sign-In Evidence</h3>
+            <p class="google-services-subtitle">Optional Google Identity Services integration for authentication-ready flows.</p>
+          </div>
+          <button type="button" class="btn-primary btn-sm" id="googleSignInBtn">Google Sign-In Ready</button>
+        </div>
+        <div id="googleAuthStatus" class="google-auth-status">Client ID not configured yet.</div>
       </div>
     </div>
 

@@ -411,6 +411,28 @@ body {
   padding: 1rem 1.1rem;
 }
 
+.google-auth-panel {
+  margin-top: 1rem;
+  background: var(--glass);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius);
+  padding: 1rem 1.1rem;
+}
+
+.google-auth-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.google-auth-status {
+  margin-top: 0.75rem;
+  font-size: 0.86rem;
+  color: var(--text-secondary);
+}
+
 .google-books-head {
   display: flex;
   justify-content: space-between;

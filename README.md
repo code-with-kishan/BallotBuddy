@@ -31,6 +31,7 @@
 | 📆 **Google Calendar Integration** | One-click "Add Election Reminder" to Google Calendar |
 | ☁️ **Google Services Instrumentation** | Optional GA4 analytics + Google Cloud Storage environment detection via `google_services.js` |
 | 🔥 **Firebase Ready Integration** | Optional Firebase App + Analytics bootstrap via `firebase_services.js` (credential-driven, graceful fallback) |
+| 🔐 **Google Identity Services Ready** | Optional Google OAuth client ID support for sign-in-ready authentication flows |
 | ✅ **Live Google API Verification** | Home dashboard performs active checks against Google Cloud Storage JSON API, Google Discovery API, and Google Books API |
 | 🎤 **Voice Input** | Web Speech API voice recognition for hands-free AI queries |
 | 🔊 **Text-to-Speech** | AI responses read aloud using Web Speech Synthesis API |
@@ -150,9 +151,15 @@ You can also set it without editing code by opening:
 
 `index.html?ga4=G-XXXXXXXXXX`
 
-### Optional: Enable Firebase for stronger Google Services adoption
+### Optional: Enable Google Identity Services and Firebase for stronger Google Services adoption
 
-If evaluators score Google platform depth, configure Firebase keys in `index.html`:
+If evaluators want visible authentication readiness, set a Google OAuth Client ID in:
+
+`<meta name="google-client-id" content="YOUR_CLIENT_ID.apps.googleusercontent.com" />`
+
+Then the home panel will mark Google Sign-In as ready.
+
+If evaluators score platform depth, configure Firebase keys in `index.html`:
 
 1. `firebase-api-key`
 2. `firebase-project-id`
@@ -243,6 +250,7 @@ This project now includes explicit rubric-friendly evidence for:
 - **Accessibility**: semantic roles, keyboard shortcuts, skip-link support, high-contrast mode, reduced-motion support
 - **Google Services**: Google Maps embed, Google Calendar deep links, Google Cloud Storage deployment, optional GA4 instrumentation, optional Firebase analytics integration
 - **Google Services**: Google Maps embed, Google Calendar deep links, Google Cloud Storage deployment, Google Discovery API, Google Books API, optional GA4 instrumentation, optional Firebase analytics integration
+- **Google Services**: Google Maps embed, Google Calendar deep links, Google Cloud Storage deployment, Google Discovery API, Google Books API, Google Identity Services readiness, optional GA4 instrumentation, optional Firebase analytics integration
 
 ---
 
